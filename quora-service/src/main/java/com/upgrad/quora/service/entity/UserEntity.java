@@ -2,8 +2,6 @@ package com.upgrad.quora.service.entity;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,7 +9,13 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "USERS", schema = "quora")
+@Table(name = "USERS")
+@NamedQueries({
+        @NamedQuery(name = "userByEmail", query = "select u from UserEntity u where u.email = " +
+                ":email"),
+        @NamedQuery(name = "userByUserName", query = "select u from UserEntity u where u.userName" +
+                " = :userName")
+})
 public class UserEntity implements Serializable {
 
     // default constructor
@@ -191,7 +195,20 @@ public class UserEntity implements Serializable {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+        return "UserEntity{" +
+                "id=" + id +
+                ", uuid='" + uuid + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", userName='" + userName + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", salt='" + salt + '\'' +
+                ", country='" + country + '\'' +
+                ", aboutMe='" + aboutMe + '\'' +
+                ", dob='" + dob + '\'' +
+                ", role='" + role + '\'' +
+                ", contactNumber='" + contactNumber + '\'' +
+                '}';
     }
-
 }
