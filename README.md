@@ -22,6 +22,6 @@ Please create your own branch using your own assigned number to your name.
 
 🧑🏻‍💻 Sehbaz - 4
 
-For example if Aditi will be working on branch 1 then she will be create the branch name as
+For example if Aditi will be working on branch 2 then she will be create the branch name as
 
 `git branch trello-quora-experiment-2`
