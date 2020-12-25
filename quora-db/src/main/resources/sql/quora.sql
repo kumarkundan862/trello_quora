@@ -1,3 +1,5 @@
+-- CREATE DATABASE IF NOT EXISTS quora;
+
 
 --USERS table is created to store the details of all the users
 DROP TABLE IF EXISTS USERS CASCADE;
