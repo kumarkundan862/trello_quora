@@ -2,8 +2,6 @@ package com.upgrad.quora.service.entity;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -18,6 +16,7 @@ public class UserAuthEntity implements Serializable {
     public UserAuthEntity() {}
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private long id;
 
@@ -112,10 +111,22 @@ public class UserAuthEntity implements Serializable {
         return new HashCodeBuilder().append(this).hashCode();
     }
 
+//    @Override
+//    public String toString() {
+//        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+//    }
+
+
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+        return "UserAuthEntity{" +
+                "id=" + id +
+                ", user=" + user +
+                ", uuid='" + uuid + '\'' +
+                ", accessToken='" + accessToken + '\'' +
+                ", loginAt=" + loginAt +
+                ", expiresAt=" + expiresAt +
+                ", logoutAt=" + logoutAt +
+                '}';
     }
-
-
 }

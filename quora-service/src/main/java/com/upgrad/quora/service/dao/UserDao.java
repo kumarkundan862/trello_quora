@@ -1,5 +1,6 @@
 package com.upgrad.quora.service.dao;
 
+import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import org.springframework.stereotype.Repository;
 
@@ -35,6 +36,12 @@ public class UserDao {
         }
     }
 
+    public UserAuthEntity createAuthToken(UserAuthEntity userAuthTokenEntity) {
+        entityManager.persist(userAuthTokenEntity);
+        return userAuthTokenEntity;
+    }
 
-
+    public void updateUser(final UserEntity userEntity) {
+        entityManager.merge(userEntity);
+    }
 }
