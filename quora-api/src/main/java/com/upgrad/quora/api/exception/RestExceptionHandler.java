@@ -2,6 +2,7 @@ package com.upgrad.quora.api.exception;
 
 import com.upgrad.quora.api.model.ErrorResponse;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
+import com.upgrad.quora.service.exception.SignOutRestrictedException;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
 import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,7 @@ import org.springframework.web.context.request.WebRequest;
 public class RestExceptionHandler {
 
     @ExceptionHandler(SignUpRestrictedException.class)
-    public ResponseEntity<ErrorResponse> authenticationFailedException(SignUpRestrictedException exc,
+    public ResponseEntity<ErrorResponse> signUpFailedException(SignUpRestrictedException exc,
                                                                        WebRequest request) {
         return new ResponseEntity<ErrorResponse>(
                 new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()),
@@ -23,7 +24,7 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> authenticationFailedException(UserNotFoundException exc,
+    public ResponseEntity<ErrorResponse> userNotFoundFailedException(UserNotFoundException exc,
                                                                        WebRequest request) {
         return new ResponseEntity<ErrorResponse>(
                 new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()),
@@ -37,6 +38,15 @@ public class RestExceptionHandler {
         return new ResponseEntity<ErrorResponse>(
                 new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()),
                 HttpStatus.UNAUTHORIZED
+        );
+    }
+
+    @ExceptionHandler(SignOutRestrictedException.class)
+    public ResponseEntity<ErrorResponse> authenticationFailedException(SignOutRestrictedException exc,
+                                                                       WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(
+                new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()),
+                HttpStatus.FORBIDDEN
         );
     }
 }
