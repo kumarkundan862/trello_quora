@@ -76,4 +76,15 @@ public class UserBusinessService {
         }
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
+    public UserAuthEntity getUserByAuthToken(String authorization) {
+
+        UserAuthEntity userAuthEntity = userDao.getUserByAccessToken(authorization);
+        if(userAuthEntity != null)
+        {
+            userAuthEntity.setLogoutAt(ZonedDateTime.now());
+            userDao.updateUserAuthEntity(userAuthEntity);
+        }
+        return userAuthEntity;
+    }
 }
