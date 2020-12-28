@@ -59,4 +59,20 @@ public class UserDao {
     public void updateUserAuthEntity(final UserAuthEntity userAuthEntity) {
         entityManager.merge(userAuthEntity);
     }
+
+    public UserEntity getUserByUuid(final String Uuid) {
+        try {
+            return entityManager.createNamedQuery("userByUuid", UserEntity.class).setParameter(
+                    "uuid", Uuid).getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    public void deleteUserUuid(UserEntity userEntity,final String Uuid) {
+        entityManager.remove(userEntity);
+        //String Uuid = userEntity.getUuid();
+        entityManager.createQuery("delete from UserEntity u where u.uuid = :uuid").setParameter(
+                "uuid", Uuid);
+    }
 }
