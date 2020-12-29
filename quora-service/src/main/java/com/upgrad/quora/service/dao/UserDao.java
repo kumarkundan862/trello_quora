@@ -75,4 +75,5 @@ public class UserDao {
         entityManager.createQuery("delete from UserEntity u where u.uuid = :uuid").setParameter(
                 "uuid", Uuid);
     }
+
 }

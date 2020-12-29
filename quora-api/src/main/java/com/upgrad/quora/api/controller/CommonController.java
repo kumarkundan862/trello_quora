@@ -23,15 +23,7 @@ public class CommonController {
     @RequestMapping(method = RequestMethod.GET, path = "/userprofile/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity <UserDetailsResponse> userProfile(@PathVariable("userId") final String userUuid, @RequestHeader("authorization") final String accessToken) throws AuthorizationFailedException, UserNotFoundException, AuthenticationFailedException {
 
-        String bearerToken = null;
-        try {
-            bearerToken = accessToken.split("Basic ")[1];
-            System.out.println("Spliting the toekn "+bearerToken);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            bearerToken = accessToken;
-        }
-
-        final UserEntity userEntity = userCommonssService.getUser(userUuid, bearerToken);
+        final UserEntity userEntity = userCommonssService.getUser(userUuid, accessToken);
         UserDetailsResponse userDetailsResponse = new UserDetailsResponse().firstName(userEntity.getFirstName())
                 .lastName(userEntity.getLastName()).userName(userEntity.getUserName()).emailAddress(userEntity.getEmail())
                 .country(userEntity.getCountry()).aboutMe(userEntity.getAboutMe()).dob(userEntity.getDob()).contactNumber(userEntity.getContactNumber());

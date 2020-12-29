@@ -2,8 +2,6 @@ package com.upgrad.quora.service.entity;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,6 +11,7 @@ import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "USER_AUTH")
+
 
 public class UserAuthEntity implements Serializable {
 
@@ -113,12 +112,14 @@ public class UserAuthEntity implements Serializable {
         return new HashCodeBuilder().append(this).hashCode();
     }
 
-    @Override
-    public String toString() {
+ //   @Override
+ /*  public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 
-/*
+  */
+
+
     @Override
     public String toString() {
         return "UserAuthEntity{" +
@@ -132,5 +133,5 @@ public class UserAuthEntity implements Serializable {
                 '}';
     }
 
- */
+
 }
