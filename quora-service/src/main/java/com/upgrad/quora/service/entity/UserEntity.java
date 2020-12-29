@@ -19,10 +19,6 @@ import java.io.Serializable;
         @NamedQuery(name = "userByUuid", query = "select u from UserEntity u where u.uuid" +
                 " = :uuid")
 
-
-        
-
-
 })
 public class UserEntity implements Serializable {
 
