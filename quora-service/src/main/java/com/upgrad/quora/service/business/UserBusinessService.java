@@ -77,10 +77,10 @@ public class UserBusinessService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public UserAuthEntity getUserByAuthToken(String authorization) {
+    public UserAuthEntity getUserByAuthToken(String authorization,boolean isLogOut) {
 
         UserAuthEntity userAuthEntity = userDao.getUserByAccessToken(authorization);
-        if(userAuthEntity != null)
+        if(userAuthEntity != null && isLogOut)
         {
             userAuthEntity.setLogoutAt(ZonedDateTime.now());
             userDao.updateUserAuthEntity(userAuthEntity);
