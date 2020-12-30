@@ -19,7 +19,7 @@ public class Answer {
     @NotNull
     private String uuid;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     @NotNull
     private UserEntity user;
@@ -33,7 +33,7 @@ public class Answer {
     @NotNull
     private ZonedDateTime date;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "question_id")
     @NotNull
     private Question question;

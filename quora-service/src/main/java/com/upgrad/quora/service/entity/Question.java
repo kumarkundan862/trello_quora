@@ -9,8 +9,12 @@ import java.util.Objects;
 @Entity
 @Table(name = "QUESTION")
 @NamedQueries({
-        @NamedQuery(name = "getAllQuestions", query = "select q from Question q")
+        @NamedQuery(name = "getAllQuestions", query = "select q from Question q"),
+        @NamedQuery(name = "getQuestion", query = "select q from Question q where q.uuid" +
+                " = :uuid"),
+        @NamedQuery(name = "deleteQuestion", query = "delete from Question q where q.uuid = :uuid")
 })
+
 public class Question {
     @Id
     @Column(name = "id")
@@ -22,7 +26,7 @@ public class Question {
     @NotNull
     private String uuid;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     @NotNull
     private UserEntity user;

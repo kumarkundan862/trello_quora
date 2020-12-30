@@ -26,5 +26,20 @@ public class QuestionDao {
             return null;
         }
     }
+
+    public Question getQuestion(String uuid) {
+        try {
+            return entityManager.createNamedQuery("getQuestion", Question.class).setParameter(
+                    "uuid", uuid).getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    public void deleteQuestion(Question question,final String uuid) {
+        entityManager.remove(question);
+        entityManager.createNamedQuery("deleteQuestion").setParameter(
+                "uuid", uuid);
+    }
 }
 
