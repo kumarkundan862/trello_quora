@@ -9,6 +9,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "answer")
 public class Answer {
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +38,55 @@ public class Answer {
     @JoinColumn(name = "question_id")
     @NotNull
     private Question question;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
+    public String getAnswer() {
+        return ans;
+    }
+
+    public void setAnswer(String ans) {
+        this.ans = ans;
+    }
+
+    public ZonedDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(ZonedDateTime date) {
+        this.date = date;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
+
 
     @Override
     public boolean equals(Object o) {
