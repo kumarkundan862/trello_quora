@@ -6,7 +6,7 @@ import com.upgrad.quora.api.model.QuestionRequest;
 import com.upgrad.quora.api.model.QuestionResponse;
 import com.upgrad.quora.service.business.QuestionService;
 import com.upgrad.quora.service.business.UserBusinessService;
-import com.upgrad.quora.service.entity.Question;
+import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
@@ -34,20 +34,19 @@ public class QuestionController {
     @RequestMapping(path = "/question/create", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionResponse> createQuestion(@RequestHeader("authorization") final String auth, QuestionRequest questionRequest) throws AuthorizationFailedException {
         UserAuthEntity userAuthEntity = userBusinessService.getUserByAuthToken(auth,false);
-        if(userAuthEntity == null)
-        {
+        if(userAuthEntity == null) {
             throw new AuthorizationFailedException("ATH-001","User has not signed in");
         }
         ZonedDateTime now = ZonedDateTime.now();
         if(userAuthEntity.getLogoutAt().isBefore(now)) {
             throw new AuthorizationFailedException("ATH-002","User is signed out.Sign in first to post a question");
         }
-        Question newQuestion = new Question();
+        QuestionEntity newQuestion = new QuestionEntity();
         newQuestion.setUser(userAuthEntity.getUser());
         newQuestion.setUuid(UUID.randomUUID().toString());
         newQuestion.setDate(now);
         newQuestion.setContent(questionRequest.getContent());
-        Question createdQuestion = questionService.createQuestion(newQuestion);
+        QuestionEntity createdQuestion = questionService.createQuestion(newQuestion);
         return new ResponseEntity<QuestionResponse>(new QuestionResponse().id(createdQuestion.getUuid()).status("QUESTION CREATED"), HttpStatus.OK);
     }
 
@@ -65,7 +64,7 @@ public class QuestionController {
             throw new AuthorizationFailedException("ATHR-002","User is signed out.Sign in first to get all questions");
         }
 
-        List<Question> allQuestions = questionService.getAllQuestions();
+        List<QuestionEntity> allQuestions = questionService.getAllQuestions();
 
         List<QuestionDetailsResponse> allQuestionResponses =
                 new ArrayList<QuestionDetailsResponse>();
@@ -87,7 +86,7 @@ public class QuestionController {
             @PathVariable("questionId") final String questionId,
             @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, InvalidQuestionException {
 
-        final Question question = questionService.deleteQuestion(questionId, authorization);
+        final QuestionEntity question = questionService.deleteQuestion(questionId, authorization);
         QuestionDeleteResponse questionDeleteResponse =
                new QuestionDeleteResponse().id(UUID.fromString(question.getUuid()).toString())
                        .status("QUESTION DELETED");

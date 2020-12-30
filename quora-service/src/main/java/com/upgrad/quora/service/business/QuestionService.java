@@ -1,7 +1,7 @@
 package com.upgrad.quora.service.business;
 
 import com.upgrad.quora.service.dao.QuestionDao;
-import com.upgrad.quora.service.entity.Question;
+import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
@@ -24,22 +24,22 @@ public class QuestionService {
     private UserBusinessService userBusinessService;
 
     @Transactional
-    public Question createQuestion(Question newQuestion) {
+    public QuestionEntity createQuestion(QuestionEntity newQuestion) {
         return questionDao.createQuestion(newQuestion);
     }
 
     @Transactional
-    public List<Question> getAllQuestions() {
+    public List<QuestionEntity> getAllQuestions() {
         return questionDao.getAllQuestions();
     }
 
     @Transactional
-    public Question getQuestion(String uuid) {
+    public QuestionEntity getQuestion(String uuid) {
         return questionDao.getQuestion(uuid);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Question deleteQuestion(final String questionId, final String authorization)
+    public QuestionEntity deleteQuestion(final String questionId, final String authorization)
             throws AuthorizationFailedException, InvalidQuestionException {
 
         UserAuthEntity userAuthEntity = userBusinessService.getUserByAuthToken(authorization,false);
@@ -51,7 +51,7 @@ public class QuestionService {
             throw new AuthorizationFailedException("ATHR-002","User is signed out.Sign in first to delete a question");
         }
 
-        Question question = getQuestion(questionId);
+        QuestionEntity question = getQuestion(questionId);
         if (question == null){
             throw new InvalidQuestionException("QUES-001", "Entered question uuid does not exist");
         }
