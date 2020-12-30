@@ -8,6 +8,11 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "QUESTION")
+
+@NamedQueries({
+        @NamedQuery(name = "questionByUuid", query = "select q from Question q where q.uuid = " +
+                ":uuid")
+})
 public class Question {
     @Id
     @Column(name = "id")
