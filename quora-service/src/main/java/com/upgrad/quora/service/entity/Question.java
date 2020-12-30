@@ -8,8 +8,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "QUESTION")
-@NamedQuery(name= "allQuestionsByUserId",query = "select qe from Question qe inner join qe.user usr where usr.uuid = :uuid")
-public class Question  {
+public class Question {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
