@@ -28,8 +28,8 @@ public class QuestionController {
         //question.setUuid(UUID.randomUUID().toString());
         question.setContent(questionEditRequest.getContent());
 
-        Question updatedQuestion = questionService.updateQuestion(questionUuid, question, authorization);
-        QuestionEditResponse questionEditResponse = new QuestionEditResponse().id(UUID.fromString(updatedQuestion.getUuid()).toString()).status("QUESTION EDITED");
+        Question editedQuestion = questionService.editQuestion(questionUuid, question, authorization);
+        QuestionEditResponse questionEditResponse = new QuestionEditResponse().id(UUID.fromString(editedQuestion.getUuid()).toString()).status("QUESTION EDITED");
         return new ResponseEntity<QuestionEditResponse>(questionEditResponse, HttpStatus.OK);
     }
 }
