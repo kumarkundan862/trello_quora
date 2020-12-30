@@ -71,7 +71,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, path = "/user/signout",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SignoutResponse> signout(@RequestHeader("authorization") final String authorization) throws SignOutRestrictedException {
 
-        UserAuthEntity userAuthToken = userBusinessService.getUserByAuthToken(authorization);
+        UserAuthEntity userAuthToken = userBusinessService.getUserByAuthToken(authorization,true);
         if(userAuthToken == null)
         {
             throw new SignOutRestrictedException("SGR-001","User is not signed in");
