@@ -1,3 +1,4 @@
+
 package com.upgrad.quora.api.controller;
 
 import com.upgrad.quora.api.model.QuestionDetailsResponse;
@@ -80,4 +81,10 @@ public class QuestionController {
         return new ResponseEntity<QuestionDetailsResponse>( questionDetailsResponse, HttpStatus.OK);
     }
 
+    @RequestMapping(method = RequestMethod.POST,path="/questions/all/{userId}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public void getAllQuestionsByUser(@PathVariable("userId") final String userId, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, UserNotFoundException {
+
+    }
+
 }
+
