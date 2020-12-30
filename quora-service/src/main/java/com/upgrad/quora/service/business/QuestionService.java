@@ -6,6 +6,7 @@ import com.upgrad.quora.service.entity.Question;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
+import com.upgrad.quora.service.exception.InvalidQuestionException;
 import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,8 +14,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
-
 import java.util.List;
+
 
 @Service
 public class QuestionService {
@@ -24,6 +25,7 @@ public class QuestionService {
 
     @Autowired
     private UserDao userDao;
+
 
     @Transactional
     public Question createQuestion(Question newQuestion) {
@@ -43,6 +45,7 @@ public class QuestionService {
 
         UserAuthEntity userAuthEntity=userDao.getUserByAccessToken(authorizationToken);
 
+
         if (userAuthEntity != null) {
 
             final ZonedDateTime now = ZonedDateTime.now();
@@ -50,6 +53,7 @@ public class QuestionService {
             final long difference = now.compareTo(loggedOutTime);
 
             if (difference < 0) {
+
                 UserEntity userEntity = userDao.getUserByUuid(userUuid);
                 if (userEntity != null) {
                     return questionDao.getAllQuestionsByUser(userUuid);
@@ -61,4 +65,41 @@ public class QuestionService {
         throw new AuthorizationFailedException("USR-001", "User has not signed in");
 
     }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Question editQuestion(final String questionUuid, final Question question, final String authorizationToken) throws AuthorizationFailedException, InvalidQuestionException {
+        UserAuthEntity userAuthEntity = userDao.getUserByAccessToken(authorizationToken);
+        if (userAuthEntity != null) {
+
+            final ZonedDateTime now = ZonedDateTime.now();
+            final ZonedDateTime loggedOutTime = userAuthEntity.getLogoutAt();
+            final long difference = now.compareTo(loggedOutTime);
+
+            if (difference < 0) {
+                long userId = userAuthEntity.getUser().getId();
+                Question existingQuestion = questionDao.getQuestionByUuid(questionUuid);
+                if (existingQuestion != null){
+                    if (userId == existingQuestion.getUser().getId()) {
+
+                        //Question existingQuestion = questionDao.getQuestionByUuid(questionUuid);
+                        //question.setContent(existingQuestion.getContent());
+                        question.setUuid(existingQuestion.getUuid());
+                        question.setId(existingQuestion.getId());
+                        question.setDate(existingQuestion.getDate());
+                        question.setUser(existingQuestion.getUser());
+
+                        return questionDao.editQuestion(question);
+                         //question;
+                    }
+                    throw new AuthorizationFailedException("ATHR-003", "Only the question owner can edit the question");
+                }
+                throw new InvalidQuestionException("QUES-001", "Entered question uuid does not exist");
+            }
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to edit the question");
+        }
+        throw new AuthorizationFailedException("USR-001", "User has not signed in");
+    }
 }
+
+
+

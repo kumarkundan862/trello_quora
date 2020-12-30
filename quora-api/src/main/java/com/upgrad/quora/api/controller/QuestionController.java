@@ -1,16 +1,13 @@
-
-
 package com.upgrad.quora.api.controller;
 
-import com.upgrad.quora.api.model.QuestionDetailsResponse;
-import com.upgrad.quora.api.model.QuestionRequest;
-import com.upgrad.quora.api.model.QuestionResponse;
+import com.upgrad.quora.api.model.*;
 import com.upgrad.quora.service.business.QuestionService;
 import com.upgrad.quora.service.business.UserBusinessService;
 import com.upgrad.quora.service.entity.Question;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
+import com.upgrad.quora.service.exception.InvalidQuestionException;
 import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -102,4 +99,19 @@ public class QuestionController {
         return  new ResponseEntity<List<QuestionDetailsResponse>>(allQuestionDetailsResponses, HttpStatus.OK);
     }
 
+    @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<QuestionEditResponse> editQuestion(final QuestionEditRequest questionEditRequest, @PathVariable("questionId") final String questionUuid, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, InvalidQuestionException {
+
+        final Question question = new Question();
+        question.setContent(questionEditRequest.getContent());
+
+        Question editedQuestion = questionService.editQuestion(questionUuid, question, authorization);
+        QuestionEditResponse questionEditResponse = new QuestionEditResponse().id(UUID.fromString(editedQuestion.getUuid()).toString()).status("QUESTION EDITED");
+        return new ResponseEntity<QuestionEditResponse>(questionEditResponse, HttpStatus.OK);
+    }
+
+
 }
+
+
+
