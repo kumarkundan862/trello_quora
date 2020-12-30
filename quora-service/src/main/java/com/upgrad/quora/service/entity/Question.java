@@ -10,20 +10,16 @@ import java.util.Objects;
 @Table(name = "QUESTION")
 
 @NamedQueries({
-<<<<<<< HEAD
+
+        @NamedQuery(name = "getAllQuestions", query = "select q from Question q"),
+        @NamedQuery(name= "allQuestionsByUserId",query = "select qe from Question qe inner join qe.user usr where usr.uuid = :uuid"),
         @NamedQuery(name = "questionByUuid", query = "select q from Question q where q.uuid = " +
                 ":uuid")
-})
-public class Question {
-=======
-        @NamedQuery(name = "getAllQuestions", query = "select q from Question q"),
-        @NamedQuery(name= "allQuestionsByUserId",query = "select qe from Question qe inner join qe.user usr where usr.uuid = :uuid")
 })
 
 
 public class Question  {
 
->>>>>>> upstream/main
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
