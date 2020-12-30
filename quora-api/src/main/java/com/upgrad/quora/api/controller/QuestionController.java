@@ -36,7 +36,7 @@ public class QuestionController {
                     .content(allQuestions.get(i).getContent())
                     .id(allQuestions.get(i).getUuid());
             allQuestionDetailsResponses.add(questionDetailsResponse);
-            System.out.println(allQuestionDetailsResponses);
+
         }
         // Return response
         return  new ResponseEntity<List<QuestionDetailsResponse>>(allQuestionDetailsResponses, HttpStatus.OK);
