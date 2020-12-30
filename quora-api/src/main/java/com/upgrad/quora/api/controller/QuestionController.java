@@ -69,6 +69,9 @@ public class QuestionController {
 
         UserEntity userEntity = userAuthEntity.getUser();
         List<Question> allQuestions = questionService.getAllQuestions();
+        if (allQuestions.size() <= 0){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         String content = allQuestions.toString();
 
         QuestionDetailsResponse questionDetailsResponse =
