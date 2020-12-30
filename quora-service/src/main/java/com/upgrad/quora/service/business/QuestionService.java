@@ -23,7 +23,7 @@ public class QuestionService {
     private UserDao userDao;
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Question updateQuestion(final String questionUuid, final Question question, final String authorizationToken) throws AuthorizationFailedException, InvalidQuestionException {
+    public Question editQuestion(final String questionUuid, final Question question, final String authorizationToken) throws AuthorizationFailedException, InvalidQuestionException {
         UserAuthEntity userAuthEntity = userDao.getUserByAccessToken(authorizationToken);
         if (userAuthEntity != null) {
 
