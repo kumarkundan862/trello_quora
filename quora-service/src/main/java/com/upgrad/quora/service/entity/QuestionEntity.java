@@ -1,3 +1,4 @@
+
 package com.upgrad.quora.service.entity;
 
 import javax.persistence.*;
@@ -13,6 +14,8 @@ import java.util.Objects;
         @NamedQuery(name = "getQuestionByUuid", query = "select q from QuestionEntity q where q" +
                 ".uuid" +
                 " = :uuid"),
+        @NamedQuery(name= "allQuestionsByUserId",query = "select qe from QuestionEntity qe " +
+                "inner join qe.user usr where usr.uuid = :uuid"),
         @NamedQuery(name = "deleteQuestion", query = "delete from QuestionEntity q where q.uuid = :uuid")
 })
 public class QuestionEntity {
@@ -109,5 +112,4 @@ public class QuestionEntity {
         return Objects.hash(getId(), getUuid(), getUser(), getContent(), getDate());
     }
 }
-
 

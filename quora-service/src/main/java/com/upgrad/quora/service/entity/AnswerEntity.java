@@ -27,16 +27,58 @@ public class AnswerEntity {
     @Column(name = "ans")
     @Size(max = 255)
     @NotNull
-    private String ans;
-
-    @Column(name = "date")
-    @NotNull
-    private ZonedDateTime date;
+    private String answer;
 
     @ManyToOne
     @JoinColumn(name = "question_id")
     @NotNull
     private QuestionEntity question;
+
+    @Column(name = "date")
+    @NotNull
+    private ZonedDateTime date;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String ans) {
+        this.answer = ans;
+    }
+
+    public ZonedDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(ZonedDateTime date) {
+        this.date = date;
+    }
+
+    public QuestionEntity getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(QuestionEntity question) {
+        this.question = question;
+    }
+
+
 
 
     @Override
@@ -47,14 +89,14 @@ public class AnswerEntity {
         return id == that.id &&
                 Objects.equals(uuid, that.uuid) &&
                 Objects.equals(user, that.user) &&
-                Objects.equals(ans, that.ans) &&
+                Objects.equals(answer, that.answer) &&
                 Objects.equals(date, that.date) &&
                 Objects.equals(question, that.question);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, uuid, user, ans, date, question);
+        return Objects.hash(id, uuid, user, answer, date, question);
     }
 
     @Override
@@ -63,7 +105,7 @@ public class AnswerEntity {
                 "id=" + id +
                 ", uuid='" + uuid + '\'' +
                 ", user=" + user +
-                ", ans='" + ans + '\'' +
+                ", ans='" + answer + '\'' +
                 ", date=" + date +
                 ", question=" + question +
                 '}';

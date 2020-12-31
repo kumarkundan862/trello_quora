@@ -1,15 +1,13 @@
 package com.upgrad.quora.api.controller;
 
-import com.upgrad.quora.api.model.QuestionDeleteResponse;
-import com.upgrad.quora.api.model.QuestionDetailsResponse;
-import com.upgrad.quora.api.model.QuestionRequest;
-import com.upgrad.quora.api.model.QuestionResponse;
+import com.upgrad.quora.api.model.*;
 import com.upgrad.quora.service.business.QuestionService;
 import com.upgrad.quora.service.business.UserBusinessService;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
+import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -92,4 +90,41 @@ public class QuestionController {
                        .status("QUESTION DELETED");
         return new ResponseEntity<QuestionDeleteResponse>(questionDeleteResponse, HttpStatus.OK);
     }
+
+
+    //This method will validate the user and give list of all the question sorted by userId.
+    @RequestMapping(method = RequestMethod.POST,path="/questions/all/{userId}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsByUser(
+            @PathVariable("userId") final String userId,
+            @RequestHeader("authorization") final String authorization)
+            throws AuthorizationFailedException, UserNotFoundException, UserNotFoundException {
+
+        // Get all questions
+        List<QuestionEntity> allQuestions = questionService.getAllQuestionsByUser(userId,authorization);
+
+        // Create response
+        List<QuestionDetailsResponse> allQuestionDetailsResponses = new ArrayList<QuestionDetailsResponse>();
+
+        for (int i = 0; i < allQuestions.size(); i++) {
+            QuestionDetailsResponse questionDetailsResponse = new QuestionDetailsResponse()
+                    .content(allQuestions.get(i).getContent())
+                    .id(allQuestions.get(i).getUuid());
+            allQuestionDetailsResponses.add(questionDetailsResponse);
+
+        }
+        // Return response
+        return  new ResponseEntity<List<QuestionDetailsResponse>>(allQuestionDetailsResponses, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<QuestionEditResponse> editQuestion(final QuestionEditRequest questionEditRequest, @PathVariable("questionId") final String questionUuid, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, InvalidQuestionException {
+
+        final QuestionEntity question = new QuestionEntity();
+        question.setContent(questionEditRequest.getContent());
+
+        QuestionEntity editedQuestion = questionService.editQuestion(questionUuid, question, authorization);
+        QuestionEditResponse questionEditResponse = new QuestionEditResponse().id(UUID.fromString(editedQuestion.getUuid()).toString()).status("QUESTION EDITED");
+        return new ResponseEntity<QuestionEditResponse>(questionEditResponse, HttpStatus.OK);
+    }
 }
+
