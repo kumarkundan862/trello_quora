@@ -8,11 +8,21 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "answer")
-@NamedQueries(
+@NamedQueries({
+        @NamedQuery(name = "getAnswerByUuid", query = "select a from AnswerEntity a where a.uuid " +
+                "= :uuid"),
         @NamedQuery(name = "answersByQid",query = "select a from AnswerEntity a where a.question.uuid" +
                 " = :qid")
-)
+})
 public class AnswerEntity {
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
