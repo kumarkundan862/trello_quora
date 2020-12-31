@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -93,6 +94,10 @@ public class AnswerService {
         answer.setUser(originalAnswer.getUser());
 
         return answerDao.editAnswer(answer);
+    }
+
+    public List<AnswerEntity> getAllAnswersForQuestionId(String q_uuid) {
+        return answerDao.getAllAnswersForQuestionId(q_uuid);
     }
 
 }
