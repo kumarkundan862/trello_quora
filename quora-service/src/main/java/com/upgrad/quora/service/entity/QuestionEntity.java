@@ -12,8 +12,7 @@ import java.util.Objects;
 @NamedQueries({
         @NamedQuery(name = "getAllQuestions", query = "select q from QuestionEntity q"),
         @NamedQuery(name = "getQuestionByUuid", query = "select q from QuestionEntity q where q" +
-                ".uuid" +
-                " = :uuid"),
+                ".uuid = :uuid"),
         @NamedQuery(name= "allQuestionsByUserId",query = "select qe from QuestionEntity qe " +
                 "inner join qe.user usr where usr.uuid = :uuid"),
         @NamedQuery(name = "deleteQuestion", query = "delete from QuestionEntity q where q.uuid = :uuid")
@@ -43,6 +42,7 @@ public class QuestionEntity {
     @Column(name = "date")
     @NotNull
     private ZonedDateTime date;
+
 
     public long getId() {
         return id;

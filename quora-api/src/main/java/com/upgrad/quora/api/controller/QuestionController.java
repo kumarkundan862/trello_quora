@@ -116,14 +116,21 @@ public class QuestionController {
         return  new ResponseEntity<List<QuestionDetailsResponse>>(allQuestionDetailsResponses, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<QuestionEditResponse> editQuestion(final QuestionEditRequest questionEditRequest, @PathVariable("questionId") final String questionUuid, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, InvalidQuestionException {
+    @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<QuestionEditResponse> editQuestion(
+            final QuestionEditRequest questionEditRequest, @PathVariable("questionId") final String questionUuid,
+            @RequestHeader("authorization") final String authorization)
+            throws AuthorizationFailedException, InvalidQuestionException {
 
         final QuestionEntity question = new QuestionEntity();
         question.setContent(questionEditRequest.getContent());
 
-        QuestionEntity editedQuestion = questionService.editQuestion(questionUuid, question, authorization);
-        QuestionEditResponse questionEditResponse = new QuestionEditResponse().id(UUID.fromString(editedQuestion.getUuid()).toString()).status("QUESTION EDITED");
+        QuestionEntity editedQuestion = questionService.editQuestion(questionUuid, question,
+                authorization);
+        QuestionEditResponse questionEditResponse = new QuestionEditResponse()
+                .id(UUID.fromString(editedQuestion.getUuid()).toString()).status("QUESTION EDITED");
         return new ResponseEntity<QuestionEditResponse>(questionEditResponse, HttpStatus.OK);
     }
 }
