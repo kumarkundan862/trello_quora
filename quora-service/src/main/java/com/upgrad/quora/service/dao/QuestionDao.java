@@ -1,6 +1,6 @@
 package com.upgrad.quora.service.dao;
 
-import com.upgrad.quora.service.entity.Question;
+import com.upgrad.quora.service.entity.QuestionEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -15,42 +15,48 @@ public class QuestionDao {
     private EntityManager entityManager;
 
 
-    public Question createQuestion(Question newQuestion) {
+    public QuestionEntity createQuestion(QuestionEntity newQuestion) {
         entityManager.persist(newQuestion);
         return newQuestion;
     }
 
-    public List<Question> getAllQuestions() {
+    public List<QuestionEntity> getAllQuestions() {
         try {
-            return entityManager.createNamedQuery("getAllQuestions", Question.class).getResultList();
-
+            return entityManager.createNamedQuery("getAllQuestions", QuestionEntity.class).getResultList();
         } catch (NoResultException nre) {
             return null;
         }
     }
 
+    public void deleteQuestion(QuestionEntity question, final String uuid){
+        entityManager.remove(question);
+        entityManager.createNamedQuery("deleteQuestion").setParameter(
+                "uuid", uuid);
+    }
 
-    public List<Question> getAllQuestionsByUser(final String uuid) {
+
+    public QuestionEntity editQuestion(final QuestionEntity question) {
+        return entityManager.merge(question);
+    }
+
+
+    public List<QuestionEntity> getAllQuestionsByUser(final String uuid) {
         try {
-            return entityManager.createNamedQuery("allQuestionsByUserId", Question.class).setParameter("uuid", uuid).getResultList();
-
+            return entityManager.createNamedQuery("allQuestionsByUserId", QuestionEntity.class).setParameter("uuid", uuid).getResultList();
         } catch (NoResultException nre) {
             return null;
         }
     }
 
-    public Question getQuestionByUuid(final String Uuid) {
+    public QuestionEntity getQuestionByUuid(final String Uuid) {
         try {
-            return entityManager.createNamedQuery("questionByUuid", Question.class).setParameter(
+            return entityManager.createNamedQuery("getQuestionByUuid", QuestionEntity.class).setParameter(
                     "uuid", Uuid).getSingleResult();
         } catch (NoResultException nre) {
             return null;
         }
     }
 
-    public Question editQuestion(final Question question) {
-        return entityManager.merge(question);
-    }
 }
 
 

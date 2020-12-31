@@ -3,10 +3,9 @@ package com.upgrad.quora.service.business;
 import com.upgrad.quora.service.dao.AnswerDao;
 import com.upgrad.quora.service.dao.QuestionDao;
 import com.upgrad.quora.service.dao.UserDao;
-import com.upgrad.quora.service.entity.Answer;
-import com.upgrad.quora.service.entity.Question;
+import com.upgrad.quora.service.entity.AnswerEntity;
+import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthEntity;
-import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,8 @@ public class AnswerService {
     private UserDao userDao;
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Answer createAnswer(final String questionUuid, final Answer answer, final String authorizationToken) throws AuthorizationFailedException, InvalidQuestionException {
+    public AnswerEntity createAnswer(final String questionUuid, final AnswerEntity answer,
+                                     final String authorizationToken) throws AuthorizationFailedException, InvalidQuestionException {
 
         UserAuthEntity userAuthEntity = userDao.getUserByAccessToken(authorizationToken);
         if (userAuthEntity != null) {
@@ -41,7 +41,7 @@ public class AnswerService {
 
             if (difference < 0) {
                 long userId = userAuthEntity.getUser().getId();
-                Question existingQuestion = questionDao.getQuestionByUuid(questionUuid);
+                QuestionEntity existingQuestion = questionDao.getQuestionByUuid(questionUuid);
 
                 if (existingQuestion != null) {
 

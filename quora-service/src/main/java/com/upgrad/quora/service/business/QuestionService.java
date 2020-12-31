@@ -1,8 +1,8 @@
 package com.upgrad.quora.service.business;
 
 import com.upgrad.quora.service.dao.QuestionDao;
+import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.dao.UserDao;
-import com.upgrad.quora.service.entity.Question;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
@@ -24,23 +24,61 @@ public class QuestionService {
     private QuestionDao questionDao;
 
     @Autowired
+    private UserBusinessService userBusinessService;
+
+    @Autowired
     private UserDao userDao;
 
-
     @Transactional
-    public Question createQuestion(Question newQuestion) {
+    public QuestionEntity createQuestion(QuestionEntity newQuestion) {
         return questionDao.createQuestion(newQuestion);
     }
 
     @Transactional
-    public List<Question> getAllQuestions() {
+    public List<QuestionEntity> getAllQuestions() {
         return questionDao.getAllQuestions();
     }
 
+    @Transactional
+    public QuestionEntity getQuestion(String uuid) {
+        return questionDao.getQuestionByUuid(uuid);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public QuestionEntity deleteQuestion(final String questionId, final String authorization)
+            throws AuthorizationFailedException, InvalidQuestionException {
+
+        UserAuthEntity userAuthEntity = userBusinessService.getUserByAuthToken(authorization, false);
+        if (userAuthEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+        ZonedDateTime now = ZonedDateTime.now();
+        if (userAuthEntity.getLogoutAt().isBefore(now)) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to delete a question");
+        }
+
+        QuestionEntity question = getQuestion(questionId);
+        if (question == null) {
+            throw new InvalidQuestionException("QUES-001", "Entered question uuid does not exist");
+        }
+        UserEntity userEntity = userAuthEntity.getUser();
+        if (userEntity.getUuid() != question.getUser().getUuid()) {
+            if (userEntity.getRole().equalsIgnoreCase("nonadmin")) {
+                throw new AuthorizationFailedException("ATHR-003", "Only the question owner or " +
+                        "admin can delete the question");
+            } else {
+                questionDao.deleteQuestion(question, questionId);
+                return question;
+            }
+        }
+
+        questionDao.deleteQuestion(question, questionId);
+        return question;
+    }
 
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public List<Question> getAllQuestionsByUser(String userUuid, final String authorizationToken) throws AuthorizationFailedException,
+    public List<QuestionEntity> getAllQuestionsByUser(String userUuid, final String authorizationToken) throws AuthorizationFailedException,
             UserNotFoundException {
 
         UserAuthEntity userAuthEntity=userDao.getUserByAccessToken(authorizationToken);
@@ -67,7 +105,8 @@ public class QuestionService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Question editQuestion(final String questionUuid, final Question question, final String authorizationToken) throws AuthorizationFailedException, InvalidQuestionException {
+    public QuestionEntity editQuestion(final String questionUuid, final QuestionEntity question,
+                                  final String authorizationToken) throws AuthorizationFailedException, InvalidQuestionException {
         UserAuthEntity userAuthEntity = userDao.getUserByAccessToken(authorizationToken);
         if (userAuthEntity != null) {
 
@@ -77,7 +116,7 @@ public class QuestionService {
 
             if (difference < 0) {
                 long userId = userAuthEntity.getUser().getId();
-                Question existingQuestion = questionDao.getQuestionByUuid(questionUuid);
+                QuestionEntity existingQuestion = questionDao.getQuestionByUuid(questionUuid);
                 if (existingQuestion != null){
                     if (userId == existingQuestion.getUser().getId()) {
 

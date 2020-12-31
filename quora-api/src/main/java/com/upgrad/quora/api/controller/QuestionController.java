@@ -3,9 +3,8 @@ package com.upgrad.quora.api.controller;
 import com.upgrad.quora.api.model.*;
 import com.upgrad.quora.service.business.QuestionService;
 import com.upgrad.quora.service.business.UserBusinessService;
-import com.upgrad.quora.service.entity.Question;
+import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthEntity;
-import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
 import com.upgrad.quora.service.exception.UserNotFoundException;
@@ -33,57 +32,75 @@ public class QuestionController {
     @RequestMapping(path = "/question/create", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionResponse> createQuestion(@RequestHeader("authorization") final String auth, QuestionRequest questionRequest) throws AuthorizationFailedException {
         UserAuthEntity userAuthEntity = userBusinessService.getUserByAuthToken(auth,false);
-        if(userAuthEntity == null)
-        {
+        if(userAuthEntity == null) {
             throw new AuthorizationFailedException("ATH-001","User has not signed in");
         }
         ZonedDateTime now = ZonedDateTime.now();
         if(userAuthEntity.getLogoutAt().isBefore(now)) {
             throw new AuthorizationFailedException("ATH-002","User is signed out.Sign in first to post a question");
         }
-        Question newQuestion = new Question();
+        QuestionEntity newQuestion = new QuestionEntity();
         newQuestion.setUser(userAuthEntity.getUser());
         newQuestion.setUuid(UUID.randomUUID().toString());
         newQuestion.setDate(now);
         newQuestion.setContent(questionRequest.getContent());
-        Question createdQuestion = questionService.createQuestion(newQuestion);
+        QuestionEntity createdQuestion = questionService.createQuestion(newQuestion);
         return new ResponseEntity<QuestionResponse>(new QuestionResponse().id(createdQuestion.getUuid()).status("QUESTION CREATED"), HttpStatus.OK);
     }
 
     @RequestMapping(path = "/question/all", method = RequestMethod.GET, produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<QuestionDetailsResponse> getAllQuestions(
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(
             @RequestHeader("authorization") final String auth) throws AuthorizationFailedException {
 
         UserAuthEntity userAuthEntity = userBusinessService.getUserByAuthToken(auth,false);
-        if(userAuthEntity == null)
-        {
-            throw new AuthorizationFailedException("ATH-001","User has not signed in");
+        if(userAuthEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001","User has not signed in");
         }
         ZonedDateTime now = ZonedDateTime.now();
         if(userAuthEntity.getLogoutAt().isBefore(now)) {
-            throw new AuthorizationFailedException("ATH-002","User is signed out.Sign in first to post a question");
+            throw new AuthorizationFailedException("ATHR-002","User is signed out.Sign in first to get all questions");
         }
 
-        UserEntity userEntity = userAuthEntity.getUser();
-        List<Question> allQuestions = questionService.getAllQuestions();
-        if (allQuestions.size() <= 0){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        List<QuestionEntity> allQuestions = questionService.getAllQuestions();
+
+        List<QuestionDetailsResponse> allQuestionResponses =
+                new ArrayList<QuestionDetailsResponse>();
+
+        for (int i = 0; i < allQuestions.size(); i++) {
+            QuestionDetailsResponse questionDetailsResponse = new QuestionDetailsResponse()
+                    .id(allQuestions.get(i).getUuid())
+                    .content(allQuestions.get(i).getContent());
+            allQuestionResponses.add(questionDetailsResponse);
+
         }
-        String content = allQuestions.toString();
 
-        QuestionDetailsResponse questionDetailsResponse =
-                new QuestionDetailsResponse().id(userEntity.getUuid()).content(content);
-
-        return new ResponseEntity<QuestionDetailsResponse>( questionDetailsResponse, HttpStatus.OK);
+        return new ResponseEntity<List<QuestionDetailsResponse>>( allQuestionResponses,
+                HttpStatus.OK);
     }
+
+    @RequestMapping(method = RequestMethod.DELETE, path = "/question/delete/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<QuestionDeleteResponse> deleteQuestion(
+            @PathVariable("questionId") final String questionId,
+            @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, InvalidQuestionException {
+
+        final QuestionEntity question = questionService.deleteQuestion(questionId, authorization);
+        QuestionDeleteResponse questionDeleteResponse =
+               new QuestionDeleteResponse().id(UUID.fromString(question.getUuid()).toString())
+                       .status("QUESTION DELETED");
+        return new ResponseEntity<QuestionDeleteResponse>(questionDeleteResponse, HttpStatus.OK);
+    }
+
 
     //This method will validate the user and give list of all the question sorted by userId.
     @RequestMapping(method = RequestMethod.POST,path="/questions/all/{userId}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsByUser(@PathVariable("userId") final String userId, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, UserNotFoundException, UserNotFoundException {
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsByUser(
+            @PathVariable("userId") final String userId,
+            @RequestHeader("authorization") final String authorization)
+            throws AuthorizationFailedException, UserNotFoundException, UserNotFoundException {
 
         // Get all questions
-        List<Question> allQuestions = questionService.getAllQuestionsByUser(userId,authorization);
+        List<QuestionEntity> allQuestions = questionService.getAllQuestionsByUser(userId,authorization);
 
         // Create response
         List<QuestionDetailsResponse> allQuestionDetailsResponses = new ArrayList<QuestionDetailsResponse>();
@@ -102,16 +119,12 @@ public class QuestionController {
     @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionEditResponse> editQuestion(final QuestionEditRequest questionEditRequest, @PathVariable("questionId") final String questionUuid, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, InvalidQuestionException {
 
-        final Question question = new Question();
+        final QuestionEntity question = new QuestionEntity();
         question.setContent(questionEditRequest.getContent());
 
-        Question editedQuestion = questionService.editQuestion(questionUuid, question, authorization);
+        QuestionEntity editedQuestion = questionService.editQuestion(questionUuid, question, authorization);
         QuestionEditResponse questionEditResponse = new QuestionEditResponse().id(UUID.fromString(editedQuestion.getUuid()).toString()).status("QUESTION EDITED");
         return new ResponseEntity<QuestionEditResponse>(questionEditResponse, HttpStatus.OK);
     }
-
-
 }
-
-
 
