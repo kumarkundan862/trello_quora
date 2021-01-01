@@ -1,20 +1,11 @@
 package com.upgrad.quora.api.controller;
 
-import com.upgrad.quora.api.model.AnswerEditRequest;
-import com.upgrad.quora.api.model.AnswerEditResponse;
-
-import com.upgrad.quora.api.model.AnswerDetailsResponse;
-
-import com.upgrad.quora.api.model.AnswerRequest;
-import com.upgrad.quora.api.model.AnswerResponse;
+import com.upgrad.quora.api.model.*;
 import com.upgrad.quora.service.business.AnswerService;
 import com.upgrad.quora.service.business.UserBusinessService;
 import com.upgrad.quora.service.entity.AnswerEntity;
-
-import com.upgrad.quora.service.exception.AnswerNotFoundException;
-
 import com.upgrad.quora.service.entity.UserAuthEntity;
-
+import com.upgrad.quora.service.exception.AnswerNotFoundException;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,4 +81,12 @@ public class AnswerController {
         return new ResponseEntity<List<AnswerDetailsResponse>>(detailsResponse,HttpStatus.OK);
     }
 
+    @RequestMapping(method = RequestMethod.DELETE, path = "/answer/delete/{answerId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity <AnswerDeleteResponse> deleteAnswer(@PathVariable("answerId") final String answerId, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException,
+            InvalidQuestionException {
+
+        final AnswerEntity answerEntity = answerService.deleteAnswer(answerId, authorization);
+        AnswerDeleteResponse answerDeleteResponse = new AnswerDeleteResponse().id(answerId).status("ANSWER DELETED");
+        return new ResponseEntity < AnswerDeleteResponse > (answerDeleteResponse, HttpStatus.OK);
+    }
 }

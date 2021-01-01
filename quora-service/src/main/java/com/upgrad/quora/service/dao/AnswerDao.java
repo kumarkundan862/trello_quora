@@ -36,4 +36,19 @@ public class AnswerDao {
     public List<AnswerEntity> getAllAnswersForQuestionId(String q_uuid) {
         return entityManager.createNamedQuery("answersByQid",AnswerEntity.class).setParameter("qid",q_uuid).getResultList();
     }
+
+    public AnswerEntity getAnswerByAnsUuid(String answerId) {
+        try {
+            return entityManager.createNamedQuery("getAnswerByUuid", AnswerEntity.class)
+                    .setParameter("uuid", answerId).getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    public void deleteAnswer(AnswerEntity answerEntity, String answerId) {
+        entityManager.remove(answerEntity);
+        entityManager.createNamedQuery("deleteQuestion").setParameter(
+                "uuid", answerId);
+    }
 }
