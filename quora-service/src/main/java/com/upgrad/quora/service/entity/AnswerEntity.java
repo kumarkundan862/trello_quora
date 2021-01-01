@@ -12,7 +12,8 @@ import java.util.Objects;
         @NamedQuery(name = "getAnswerByUuid", query = "select a from AnswerEntity a where a.uuid " +
                 "= :uuid"),
         @NamedQuery(name = "answersByQid",query = "select a from AnswerEntity a where a.question.uuid" +
-                " = :qid")
+                " = :qid"),
+        @NamedQuery(name = "deleteAnswer", query = "delete from AnswerEntity q where q.uuid = :uuid")
 })
 public class AnswerEntity {
     public long getId() {
