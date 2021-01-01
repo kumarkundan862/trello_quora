@@ -29,6 +29,9 @@ public class AnswerService {
     private QuestionDao questionDao;
 
     @Autowired
+    private UserBusinessService userBusinessService;
+
+    @Autowired
     private UserDao userDao;
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -100,4 +103,36 @@ public class AnswerService {
         return answerDao.getAllAnswersForQuestionId(q_uuid);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
+    public AnswerEntity deleteAnswer(final String answerId, final String authorization)
+            throws AuthorizationFailedException,
+            InvalidQuestionException {
+
+        UserAuthEntity userAuthEntity = userBusinessService.getUserByAuthToken(authorization, false);
+        if (userAuthEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+        ZonedDateTime now = ZonedDateTime.now();
+        if (userAuthEntity.getLogoutAt().isBefore(now)) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to delete a question");
+        }
+
+        AnswerEntity answerEntity = answerDao.getAnswerByAnsUuid(answerId);
+        System.out.println("hi :" + answerEntity);
+        if (answerEntity == null) {
+            throw new InvalidQuestionException("QUES-001", "Entered question uuid does not exist");
+        }
+        UserEntity loggedInUser = userAuthEntity.getUser();
+        if (loggedInUser.getUuid() != answerEntity.getUser().getUuid()) {
+            if (loggedInUser.getRole().equalsIgnoreCase("nonadmin")) {
+                throw new AuthorizationFailedException("ATHR-003", "Only the question owner or " + "admin can delete the question");
+            } else {
+                answerDao.deleteAnswer(answerEntity, answerId);
+                return answerEntity;
+            }
+        }
+
+        answerDao.deleteAnswer(answerEntity, answerId);
+        return answerEntity;
+    }
 }
