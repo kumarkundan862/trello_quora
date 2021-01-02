@@ -20,12 +20,13 @@ public class RestExceptionHandler {
         );
     }
 
+    // edited
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> userNotFoundFailedException(UserNotFoundException exc,
                                                                        WebRequest request) {
         return new ResponseEntity<ErrorResponse>(
                 new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()),
-                HttpStatus.UNAUTHORIZED
+                HttpStatus.NOT_FOUND
         );
     }
 
@@ -38,21 +39,23 @@ public class RestExceptionHandler {
         );
     }
 
+    // edited
     @ExceptionHandler(SignOutRestrictedException.class)
-    public ResponseEntity<ErrorResponse> authenticationFailedException(SignOutRestrictedException exc,
+    public ResponseEntity<ErrorResponse> signOutRestrictedException(SignOutRestrictedException exc,
                                                                        WebRequest request) {
         return new ResponseEntity<ErrorResponse>(
                 new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()),
-                HttpStatus.FORBIDDEN
+                HttpStatus.UNAUTHORIZED
         );
     }
 
+    // edited
     @ExceptionHandler(AuthorizationFailedException.class)
     public ResponseEntity<ErrorResponse> authorizationFailedException(AuthorizationFailedException exc,
                                                                       WebRequest request) {
         return new ResponseEntity<ErrorResponse>(
                 new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()),
-                HttpStatus.UNAUTHORIZED
+                HttpStatus.FORBIDDEN
         );
     }
 
@@ -64,4 +67,16 @@ public class RestExceptionHandler {
                 HttpStatus.UNAUTHORIZED
         );
     }
+
+
+    @ExceptionHandler(AnswerNotFoundException.class)
+    public ResponseEntity<ErrorResponse> answerNotFoundException(AnswerNotFoundException exc,
+                                                                 WebRequest request) {
+        return new ResponseEntity<ErrorResponse>(
+                new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()),
+                HttpStatus.UNAUTHORIZED
+        );
+    }
+
+
 }
