@@ -21,28 +21,35 @@ public class AdminService {
     @Transactional(propagation = Propagation.REQUIRED)
     public UserEntity deleteUser(final String userUuid, final String authorizationToken) throws AuthorizationFailedException, UserNotFoundException {
         UserAuthEntity userAuthEntity = userDao.getUserByAccessToken(authorizationToken);
-        if(userAuthEntity != null){
+        if(userAuthEntity == null){
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
 
-            final ZonedDateTime now = ZonedDateTime.now();
-            final ZonedDateTime loggedOutTime = userAuthEntity.getLogoutAt();
-            final long difference = now.compareTo(loggedOutTime);
 
-            if(difference < 0){
-                final String role = userAuthEntity.getUser().getRole();
+        final String role = userAuthEntity.getUser().getRole();
+        if(!role.equals("admin")){
+            throw new AuthorizationFailedException("ATHR-003", "Unauthorized Access, Entered user is not an admin");
+        }
 
-                if(role.equals("admin")){
-                    UserEntity userEntity =  userDao.getUserByUuid(userUuid);
+        UserEntity userEntity =  userDao.getUserByUuid(userUuid);
 
-                    if(userEntity != null){
-                        userDao.deleteUserUuid(userEntity,userEntity.getUuid());
-                        return userEntity;
-                    }
-                    throw new UserNotFoundException("USR-001", "User with entered uuid to be deleted does not exist");
-                }
-                throw new AuthorizationFailedException("ATHR-003", "Unauthorized Access, Entered user is not an admin");
-            }
+        if(userEntity == null){
+            throw new UserNotFoundException("USR-001", "User with entered uuid to be deleted does not exist");
+        }
+
+        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime loggedOutTime = userAuthEntity.getLogoutAt();
+        final long difference = now.compareTo(loggedOutTime);
+
+        if(difference > 0){
             throw new AuthorizationFailedException("ATHR-002", "User is signed out");
         }
-        throw new AuthorizationFailedException("USR-001", "User has not signed in");
+
+        userDao.deleteUserUuid(userEntity,userEntity.getUuid());
+        return userEntity;
+
     }
+
+
+
 }

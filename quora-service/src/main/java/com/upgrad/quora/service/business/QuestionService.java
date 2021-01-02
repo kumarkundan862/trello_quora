@@ -1,8 +1,8 @@
 package com.upgrad.quora.service.business;
 
 import com.upgrad.quora.service.dao.QuestionDao;
-import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.QuestionEntity;
+import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
@@ -35,17 +35,7 @@ public class QuestionService {
     }
 
     @Transactional
-    public List<QuestionEntity> getAllQuestions(final String authorization) throws AuthorizationFailedException {
-
-        UserAuthEntity userAuthEntity = userBusinessService.getUserByAuthToken(authorization,false);
-        if(userAuthEntity == null) {
-            throw new AuthorizationFailedException("ATHR-001","User has not signed in");
-        }
-        ZonedDateTime now = ZonedDateTime.now();
-        if(userAuthEntity.getLogoutAt().isBefore(now)) {
-            throw new AuthorizationFailedException("ATHR-002","User is signed out.Sign in first to get all questions");
-        }
-
+    public List<QuestionEntity> getAllQuestions() {
         return questionDao.getAllQuestions();
     }
 
@@ -64,8 +54,7 @@ public class QuestionService {
         }
         ZonedDateTime now = ZonedDateTime.now();
         if (userAuthEntity.getLogoutAt().isBefore(now)) {
-            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first " +
-                    "to delete a question");
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to delete a question");
         }
 
         QuestionEntity question = getQuestion(questionId);

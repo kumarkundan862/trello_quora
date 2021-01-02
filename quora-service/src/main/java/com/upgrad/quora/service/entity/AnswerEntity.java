@@ -3,7 +3,6 @@ package com.upgrad.quora.service.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
@@ -16,10 +15,14 @@ import java.util.Objects;
                 " = :qid"),
         @NamedQuery(name = "deleteAnswer", query = "delete from AnswerEntity q where q.uuid = :uuid")
 })
-public class AnswerEntity implements Serializable {
+public class AnswerEntity {
+    public long getId() {
+        return id;
+    }
 
-    public AnswerEntity() {}
-
+    public void setId(long id) {
+        this.id = id;
+    }
 
     @Id
     @Column(name = "id")
@@ -90,14 +93,26 @@ public class AnswerEntity implements Serializable {
         this.question = question;
     }
 
-    public long getId() {
-        return id;
+
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AnswerEntity)) return false;
+        AnswerEntity that = (AnswerEntity) o;
+        return id == that.id &&
+                Objects.equals(uuid, that.uuid) &&
+                Objects.equals(user, that.user) &&
+                Objects.equals(answer, that.answer) &&
+                Objects.equals(date, that.date) &&
+                Objects.equals(question, that.question);
     }
 
-    public void setId(long id) {
-        this.id = id;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, uuid, user, answer, date, question);
     }
-
 
     @Override
     public String toString() {
@@ -105,27 +120,9 @@ public class AnswerEntity implements Serializable {
                 "id=" + id +
                 ", uuid='" + uuid + '\'' +
                 ", user=" + user +
-                ", answer='" + answer + '\'' +
-                ", question=" + question +
+                ", ans='" + answer + '\'' +
                 ", date=" + date +
+                ", question=" + question +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof AnswerEntity)) return false;
-        AnswerEntity that = (AnswerEntity) o;
-        return getId() == that.getId() &&
-                Objects.equals(getUuid(), that.getUuid()) &&
-                Objects.equals(getUser(), that.getUser()) &&
-                Objects.equals(getAnswer(), that.getAnswer()) &&
-                Objects.equals(getQuestion(), that.getQuestion()) &&
-                Objects.equals(getDate(), that.getDate());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getUuid(), getUser(), getAnswer(), getQuestion(), getDate());
     }
 }
