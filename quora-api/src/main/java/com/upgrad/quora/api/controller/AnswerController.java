@@ -2,8 +2,10 @@ package com.upgrad.quora.api.controller;
 
 import com.upgrad.quora.api.model.*;
 import com.upgrad.quora.service.business.AnswerService;
+import com.upgrad.quora.service.business.QuestionService;
 import com.upgrad.quora.service.business.UserBusinessService;
 import com.upgrad.quora.service.entity.AnswerEntity;
+import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.exception.AnswerNotFoundException;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
@@ -28,7 +30,9 @@ public class AnswerController {
 
     @Autowired
     private UserBusinessService userBusinessService;
-    private Object AnswerDetailsResponse;
+
+    @Autowired
+    private QuestionService questionService;
 
     @RequestMapping(method = RequestMethod.POST, path = "/question/{questionId}/answer/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AnswerResponse> createAnswer(final AnswerRequest answerRequest, @PathVariable("questionId") final String questionUuid, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, InvalidQuestionException {
@@ -65,11 +69,13 @@ public class AnswerController {
                                                                String q_uuid) throws AuthorizationFailedException, InvalidQuestionException {
         UserAuthEntity userAuthEntity = userBusinessService.getUserByAuthToken(auth,false);
         if(userAuthEntity == null)
-            throw new AuthorizationFailedException("ATH-001","User has not signed in");
+            throw new AuthorizationFailedException("ATHR-001","User has not signed in");
+
         if(userAuthEntity.getLogoutAt().isBefore(ZonedDateTime.now()))
-            throw new AuthorizationFailedException("ATH-002","User is signed out.Sign in first to get the answers");
+            throw new AuthorizationFailedException("ATHR-002","User is signed out.Sign in first to get the answers");
+        QuestionEntity questionEntity = questionService.getQuestion(q_uuid);
         List<AnswerEntity> allAnswers = answerService.getAllAnswersForQuestionId(q_uuid);
-        if(allAnswers.size() == 0)
+        if(questionEntity == null)
             throw new InvalidQuestionException("QUES-001","The question with entered uuid whose details are to be seen does not exist");
         List<AnswerDetailsResponse> detailsResponse = new ArrayList<AnswerDetailsResponse>();
         for(int i=0;i<allAnswers.size();i++)
