@@ -28,7 +28,7 @@ public class AnswerController {
 
     @Autowired
     private UserBusinessService userBusinessService;
-    private Object AnswerDetailsResponse;
+//    private Object AnswerDetailsResponse;
 
     @RequestMapping(method = RequestMethod.POST, path = "/question/{questionId}/answer/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AnswerResponse> createAnswer(final AnswerRequest answerRequest, @PathVariable("questionId") final String questionUuid, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, InvalidQuestionException {

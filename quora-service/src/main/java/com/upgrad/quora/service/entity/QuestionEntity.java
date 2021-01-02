@@ -4,7 +4,6 @@ package com.upgrad.quora.service.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
@@ -18,7 +17,7 @@ import java.util.Objects;
                 "inner join qe.user usr where usr.uuid = :uuid"),
         @NamedQuery(name = "deleteQuestion", query = "delete from QuestionEntity q where q.uuid = :uuid")
 })
-public class QuestionEntity implements Serializable {
+public class QuestionEntity {
 
     @Id
     @Column(name = "id")
