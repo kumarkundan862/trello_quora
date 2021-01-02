@@ -33,11 +33,11 @@ public class QuestionController {
     public ResponseEntity<QuestionResponse> createQuestion(@RequestHeader("authorization") final String auth, QuestionRequest questionRequest) throws AuthorizationFailedException {
         UserAuthEntity userAuthEntity = userBusinessService.getUserByAuthToken(auth,false);
         if(userAuthEntity == null) {
-            throw new AuthorizationFailedException("ATH-001","User has not signed in");
+            throw new AuthorizationFailedException("ATHR-001","User has not signed in");
         }
         ZonedDateTime now = ZonedDateTime.now();
         if(userAuthEntity.getLogoutAt().isBefore(now)) {
-            throw new AuthorizationFailedException("ATH-002","User is signed out.Sign in first to post a question");
+            throw new AuthorizationFailedException("ATHR-002","User is signed out.Sign in first to post a question");
         }
         QuestionEntity newQuestion = new QuestionEntity();
         newQuestion.setUser(userAuthEntity.getUser());
