@@ -51,18 +51,9 @@ public class QuestionController {
     @RequestMapping(path = "/question/all", method = RequestMethod.GET, produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(
-            @RequestHeader("authorization") final String auth) throws AuthorizationFailedException {
+            @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException {
 
-        UserAuthEntity userAuthEntity = userBusinessService.getUserByAuthToken(auth,false);
-        if(userAuthEntity == null) {
-            throw new AuthorizationFailedException("ATHR-001","User has not signed in");
-        }
-        ZonedDateTime now = ZonedDateTime.now();
-        if(userAuthEntity.getLogoutAt().isBefore(now)) {
-            throw new AuthorizationFailedException("ATHR-002","User is signed out.Sign in first to get all questions");
-        }
-
-        List<QuestionEntity> allQuestions = questionService.getAllQuestions();
+        List<QuestionEntity> allQuestions = questionService.getAllQuestions(authorization);
 
         List<QuestionDetailsResponse> allQuestionResponses =
                 new ArrayList<QuestionDetailsResponse>();
