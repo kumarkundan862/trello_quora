@@ -105,7 +105,7 @@ public class QuestionService {
                 if (userEntity != null) {
                     return questionDao.getAllQuestionsByUser(userUuid);
                 }
-                throw new UserNotFoundException("USR-001", "User with entered uuid to be deleted does not exist");
+                throw new UserNotFoundException("USR-001", "User with entered uuid does not exist");
             }
             throw new AuthorizationFailedException("ATHR-002", "User is signed out");
         }
