@@ -53,16 +53,8 @@ public class QuestionController {
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(
             @RequestHeader("authorization") final String auth) throws AuthorizationFailedException {
 
-        UserAuthEntity userAuthEntity = userBusinessService.getUserByAuthToken(auth,false);
-        if(userAuthEntity == null) {
-            throw new AuthorizationFailedException("ATHR-001","User has not signed in");
-        }
-        ZonedDateTime now = ZonedDateTime.now();
-        if(userAuthEntity.getLogoutAt().isBefore(now)) {
-            throw new AuthorizationFailedException("ATHR-002","User is signed out.Sign in first to get all questions");
-        }
 
-        List<QuestionEntity> allQuestions = questionService.getAllQuestions();
+        List<QuestionEntity> allQuestions = questionService.getAllQuestions(auth);
 
         List<QuestionDetailsResponse> allQuestionResponses =
                 new ArrayList<QuestionDetailsResponse>();

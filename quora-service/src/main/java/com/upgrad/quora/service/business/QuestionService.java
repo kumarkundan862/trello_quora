@@ -35,9 +35,18 @@ public class QuestionService {
     }
 
     @Transactional
-    public List<QuestionEntity> getAllQuestions() {
-        return questionDao.getAllQuestions();
+    public List<QuestionEntity> getAllQuestions(final String authorizationToken)  throws AuthorizationFailedException
+             {
+        UserAuthEntity userAuthEntity = userDao.getUserByAccessToken(authorizationToken);
+
+        if (userAuthEntity != null) {
+
+                    return questionDao.getAllQuestions();
+
+        }throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
     }
+
+
 
     @Transactional
     public QuestionEntity getQuestion(String uuid) {
