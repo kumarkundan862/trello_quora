@@ -7,6 +7,7 @@ import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
+import com.upgrad.quora.service.exception.SignOutRestrictedException;
 import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class QuestionController {
     private UserBusinessService userBusinessService;
 
     @RequestMapping(path = "/question/create", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<QuestionResponse> createQuestion(@RequestHeader("authorization") final String auth, QuestionRequest questionRequest) throws AuthorizationFailedException {
+    public ResponseEntity<QuestionResponse> createQuestion(@RequestHeader("authorization") final String auth, QuestionRequest questionRequest) throws AuthorizationFailedException{
         UserAuthEntity userAuthEntity = userBusinessService.getUserByAuthToken(auth,false);
         if(userAuthEntity == null) {
             throw new AuthorizationFailedException("ATHR-001","User has not signed in");
@@ -74,7 +75,7 @@ public class QuestionController {
     @RequestMapping(method = RequestMethod.DELETE, path = "/question/delete/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionDeleteResponse> deleteQuestion(
             @PathVariable("questionId") final String questionId,
-            @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, InvalidQuestionException {
+            @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, InvalidQuestionException, SignOutRestrictedException {
 
         final QuestionEntity question = questionService.deleteQuestion(questionId, authorization);
         QuestionDeleteResponse questionDeleteResponse =

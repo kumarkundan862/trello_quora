@@ -54,7 +54,7 @@ public class AnswerController {
     public ResponseEntity<AnswerEditResponse> editAnswer(@PathVariable("answerId") final String answerId,
                                                          @RequestHeader("authorization") final String authorization,
                                                          final AnswerEditRequest answerEditRequest) throws AuthorizationFailedException, 
-                                                         AnswerNotFoundException, AnswerNotFoundException {
+                                                         AnswerNotFoundException {
 
         final AnswerEntity answer = new AnswerEntity();
         answer.setAnswer(answerEditRequest.getContent());
@@ -68,7 +68,7 @@ public class AnswerController {
   
     @RequestMapping(path = "/answer/all/{questionId}", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<AnswerDetailsResponse>> getAllAnswersForQuestionId(@RequestHeader("authorization") final String auth,
-                                                               String q_uuid) throws AuthorizationFailedException, InvalidQuestionException {
+                                                               String q_uuid) throws AuthorizationFailedException, InvalidQuestionException{
         UserAuthEntity userAuthEntity = userBusinessService.getUserByAuthToken(auth,false);
         if(userAuthEntity == null)
             throw new AuthorizationFailedException("ATHR-001","User has not signed in");
@@ -91,7 +91,7 @@ public class AnswerController {
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/answer/delete/{answerId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity <AnswerDeleteResponse> deleteAnswer(@PathVariable("answerId") final String answerId, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException,
-            InvalidQuestionException {
+            InvalidQuestionException, AnswerNotFoundException{
 
         final AnswerEntity answerEntity = answerService.deleteAnswer(answerId, authorization);
         AnswerDeleteResponse answerDeleteResponse = new AnswerDeleteResponse().id(answerId).status("ANSWER DELETED");

@@ -74,7 +74,7 @@ public class RestExceptionHandler {
                                                                  WebRequest request) {
         return new ResponseEntity<ErrorResponse>(
                 new ErrorResponse().code(exc.getCode()).message(exc.getErrorMessage()),
-                HttpStatus.UNAUTHORIZED
+                HttpStatus.NOT_FOUND
         );
     }
 
