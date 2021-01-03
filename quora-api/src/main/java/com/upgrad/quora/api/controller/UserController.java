@@ -47,7 +47,6 @@ public class UserController {
         userEntity.setRole("nonadmin");
         userEntity.setContactNumber(signupUserRequest.getContactNumber());
 
-
         final UserEntity createdUserEntity = userBusinessService.signUp(userEntity);
         SignupUserResponse userResponse =
                 new SignupUserResponse().id(createdUserEntity.getUuid())
@@ -72,8 +71,7 @@ public class UserController {
     public ResponseEntity<SignoutResponse> signout(@RequestHeader("authorization") final String authorization) throws SignOutRestrictedException {
 
         UserAuthEntity userAuthToken = userBusinessService.getUserByAuthToken(authorization,true);
-        if(userAuthToken == null)
-        {
+        if(userAuthToken == null) {
             throw new SignOutRestrictedException("SGR-001","User is not signed in");
         }
         UserEntity user = userAuthToken.getUser();

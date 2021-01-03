@@ -50,8 +50,7 @@ public class UserBusinessService {
         if(userEntity == null)
             throw new UserNotFoundException("ATH-001","This username does not exist");
         String encryptedPassword = PasswordCryptographyProvider.encrypt(password,userEntity.getSalt());
-        if(encryptedPassword.equals(userEntity.getPassword()))
-        {
+        if(encryptedPassword.equals(userEntity.getPassword())) {
             UserAuthEntity userAuthTokenEntity = new UserAuthEntity();
             JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(encryptedPassword);
 
@@ -70,8 +69,7 @@ public class UserBusinessService {
             return createdUserAuthToken;
 
         }
-        else
-        {
+        else {
             throw new AuthenticationFailedException("ATH-002","Password failed");
         }
     }
@@ -80,8 +78,8 @@ public class UserBusinessService {
     public UserAuthEntity getUserByAuthToken(String authorization,boolean isLogOut) {
 
         UserAuthEntity userAuthEntity = userDao.getUserByAccessToken(authorization);
-        if(userAuthEntity != null && isLogOut)
-        {
+
+        if(userAuthEntity != null && isLogOut) {
             userAuthEntity.setLogoutAt(ZonedDateTime.now());
             userDao.updateUserAuthEntity(userAuthEntity);
         }
