@@ -33,7 +33,7 @@ public class AnswerService {
 
     @Autowired
     private UserBusinessService userBusinessService;
-
+/*
     @Transactional(propagation = Propagation.REQUIRED)
     public AnswerEntity createAnswer(final String questionUuid, final AnswerEntity answer,
                                      final String authorizationToken) throws AuthorizationFailedException, InvalidQuestionException {
@@ -64,6 +64,35 @@ public class AnswerService {
         }
         throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
     }
+
+ */
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public AnswerEntity createAnswer(final String questionUuid, final AnswerEntity answer,
+                                     final String authorizationToken) throws AuthorizationFailedException, InvalidQuestionException {
+
+        UserAuthEntity userAuthEntity = userDao.getUserByAccessToken(authorizationToken);
+        if (userAuthEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+
+        QuestionEntity existingQuestion = questionDao.getQuestionByUuid(questionUuid);
+        if (existingQuestion == null) {
+            throw new InvalidQuestionException("QUES-001", "The question entered is invalid");
+        }
+        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime loggedOutTime = userAuthEntity.getLogoutAt();
+        final long difference = now.compareTo(loggedOutTime);
+        if (difference > 0) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to post an answer");
+        }
+        answer.setQuestion(existingQuestion);
+        answer.setUuid(UUID.randomUUID().toString());
+        answer.setUser(userAuthEntity.getUser());
+        answer.setDate(now);
+        return answerDao.createAnswer(answer);
+    }
+
 
 
     @Transactional(propagation = Propagation.REQUIRED)
