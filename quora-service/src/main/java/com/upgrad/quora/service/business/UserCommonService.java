@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
+
 @Service
 public class UserCommonService {
 
@@ -20,16 +22,20 @@ public class UserCommonService {
     public UserEntity getUser(final String userUuid, final String authorizationToken) throws AuthorizationFailedException,
             UserNotFoundException {
 
-        UserEntity userEntity = userDao.getUserByUuid(userUuid);
-        if (userEntity != null) {
-
-            UserAuthEntity userAuthEntity = userDao.getUserByAccessToken(authorizationToken);
-            if (userAuthEntity == null) {
-                throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
-            }
-            return userEntity;
+        UserAuthEntity userAuthEntity = userDao.getUserByAccessToken(authorizationToken);
+        if (userAuthEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
         }
-        throw new UserNotFoundException("USR-001", "User with entered uuid does not exist");
+        ZonedDateTime now = ZonedDateTime.now();
+        if (userAuthEntity.getLogoutAt().isBefore(now)) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get user details");
+        }
+        UserEntity userEntity = userDao.getUserByUuid(userUuid);
+        if (userEntity == null) {
+            throw new UserNotFoundException("USR-001", "User with entered uuid does not exist");
+        }
+
+        return userEntity;
     }
 
 }
