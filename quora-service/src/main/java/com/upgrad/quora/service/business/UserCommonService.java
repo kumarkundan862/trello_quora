@@ -22,22 +22,30 @@ public class UserCommonService {
     public UserEntity getUser(final String userUuid, final String authorizationToken) throws AuthorizationFailedException,
             UserNotFoundException {
 
-        UserAuthEntity userAuthEntity = userDao.getUserByAccessToken(authorizationToken);
-        if (userAuthEntity == null) {
-            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
-        }
-        UserEntity userEntity = userDao.getUserByUuid(userUuid);
-        if (userEntity == null) {
-            throw new UserNotFoundException("USR-001", "User with entered uuid to be deleted does not exist");
-        }
-        final ZonedDateTime now = ZonedDateTime.now();
-        final ZonedDateTime loggedOutTime = userAuthEntity.getLogoutAt();
-        final long difference = now.compareTo(loggedOutTime);
+        UserAuthEntity userAuthEntity=userDao.getUserByAccessToken(authorizationToken);
 
-        if (difference < 0) {
-            return userEntity;
+        if (userAuthEntity != null) {
+
+            final ZonedDateTime now = ZonedDateTime.now();
+            final ZonedDateTime loggedOutTime = userAuthEntity.getLogoutAt();
+
+            if(now!=null && loggedOutTime!=null){
+                final long difference = now.compareTo(loggedOutTime);
+
+                if (difference < 0) {
+
+                    UserEntity userEntity = userDao.getUserByUuid(userUuid);
+                    if (userEntity != null) {
+
+                        return userEntity;
+                    }
+                    throw new UserNotFoundException("USR-001", "User with entered uuid does not exist");
+                }
+
+            }throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get user details");
+
         }
-        throw new AuthorizationFailedException("ATHR-002", "User is signed out");
+        throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
     }
 
 }
