@@ -21,6 +21,7 @@ import java.util.List;
 @Service
 public class QuestionService {
 
+    //Required services are autowired to enable access to methods defined in respective Business services
     @Autowired
     private QuestionDao questionDao;
 
@@ -30,11 +31,20 @@ public class QuestionService {
     @Autowired
     private UserDao userDao;
 
+
+    /*
+        This service is used to create a question in the Quora Application.
+        Any logged-in user can access this endpoint
+     */
     @Transactional
     public QuestionEntity createQuestion(QuestionEntity newQuestion) {
         return questionDao.createQuestion(newQuestion);
     }
 
+    /*
+        This service is used to fetch all the questions that have been posted in the application
+        by any user. Any logged-in user can access this endpoint.
+     */
     @Transactional
     public List<QuestionEntity> getAllQuestions(final String authorizationToken) throws AuthorizationFailedException {
 
@@ -55,11 +65,18 @@ public class QuestionService {
     }
 
 
+    /*
+        This service is used to get a question that has been posted by a user.
+     */
     @Transactional
     public QuestionEntity getQuestion(String uuid) {
         return questionDao.getQuestionByUuid(uuid);
     }
 
+    /*
+        This service is used to delete a question that has been posted by a user. Only the owner
+         or admin of the question can delete the question.
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public QuestionEntity deleteQuestion(final String questionId, final String authorization)
             throws AuthorizationFailedException, InvalidQuestionException, SignOutRestrictedException {
@@ -93,6 +110,10 @@ public class QuestionService {
     }
 
 
+    /*
+        This service is used to fetch all the questions posed by a specific user.
+        Any user can access this endpoint.
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public List<QuestionEntity> getAllQuestionsByUser(String userUuid, final String authorizationToken) throws AuthorizationFailedException,
             UserNotFoundException {
@@ -106,19 +127,22 @@ public class QuestionService {
         final ZonedDateTime loggedOutTime = userAuthEntity.getLogoutAt();
         final long difference = now.compareTo(loggedOutTime);
 
-            if (difference > 0) {
-                throw new AuthorizationFailedException("ATHR-002", "User is signed out");
-            }
+        if (difference > 0) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out");
+        }
 
-            UserEntity userEntity = userDao.getUserByUuid(userUuid);
-            if (userEntity == null) {
-                throw new UserNotFoundException("USR-001", "User with entered uuid to be deleted does not exist");
-            }
+        UserEntity userEntity = userDao.getUserByUuid(userUuid);
+        if (userEntity == null) {
+            throw new UserNotFoundException("USR-001", "User with entered uuid to be deleted does not exist");
+        }
 
-            return questionDao.getAllQuestionsByUser(userUuid);
+        return questionDao.getAllQuestionsByUser(userUuid);
     }
 
-
+    /*
+        This service is used to edit a question that has been posted by a user. Only the owner
+        of the question can edit the question.
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public QuestionEntity editQuestion(final String questionUuid, final QuestionEntity question,
                                        final String authorizationToken) throws AuthorizationFailedException,

@@ -15,9 +15,15 @@ import java.time.ZonedDateTime;
 @Service
 public class UserCommonService {
 
+    //Required services are autowired to enable access to methods defined in respective UserCommon services
     @Autowired
     private UserDao userDao;
 
+    /*
+        This service is used to get the details of any user in the Quora Application. This
+        service can be accessed by any user in the application. It takes userId of the user
+        whose information is to be retrieved.
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public UserEntity getUser(final String userUuid, final String authorizationToken) throws AuthorizationFailedException,
             UserNotFoundException {

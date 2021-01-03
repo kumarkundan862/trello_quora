@@ -22,6 +22,7 @@ import java.util.UUID;
 @Service
 public class AnswerService {
 
+    //Required services are autowired to enable access to methods defined in respective Answer services
     @Autowired
     private AnswerDao answerDao;
 
@@ -34,6 +35,10 @@ public class AnswerService {
     @Autowired
     private UserBusinessService userBusinessService;
 
+    /*
+        This service is used to create an answer from the Quora Application. Any logged-in user can
+        access this endpoint.
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public AnswerEntity createAnswer(final String questionUuid, final AnswerEntity answer,
                                      final String authorizationToken) throws AuthorizationFailedException, InvalidQuestionException {
@@ -61,7 +66,9 @@ public class AnswerService {
     }
 
 
-
+    /*
+        This service is used to edit an answer. Only the owner of the answer can edit the answer.
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public AnswerEntity editAnswer(final String answerId, final String authoriztaion,
                                    final AnswerEntity answer) throws AuthorizationFailedException, AnswerNotFoundException {
@@ -95,14 +102,24 @@ public class AnswerService {
         return answerDao.editAnswer(answer);
     }
 
+
+    /*
+        This service is used to get all answers to a particular question. Any logged-in user can
+        access this endpoint
+     */
     public List<AnswerEntity> getAllAnswersForQuestionId(String q_uuid) {
         return answerDao.getAllAnswersForQuestionId(q_uuid);
     }
 
+
+    /*
+        This endpoint is used to delete an answer. Only the owner of the answer or admin
+        can delete an answer.
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public AnswerEntity deleteAnswer(final String answerId, final String authorization)
-                                    throws AuthorizationFailedException,
-                                    InvalidQuestionException, AnswerNotFoundException{
+            throws AuthorizationFailedException,
+            InvalidQuestionException, AnswerNotFoundException{
 
         UserAuthEntity userAuthEntity = userBusinessService.getUserByAuthToken(authorization, false);
         if (userAuthEntity == null) {

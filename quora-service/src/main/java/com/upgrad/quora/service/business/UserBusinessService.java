@@ -17,12 +17,19 @@ import java.util.UUID;
 @Service
 public class UserBusinessService {
 
+    //Required services are autowired to enable access to methods defined in respective User services
     @Autowired
     private UserDao userDao;
 
     @Autowired
     private PasswordCryptographyProvider passwordCryptographyProvider;
 
+
+    /*
+        This service is used to register a new user in the Quora Application.
+        On successful registration, the information is stored in the database and JSON response
+        is created with appropriate message and HTTP status.
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public UserEntity signUp(UserEntity userEntity) throws SignUpRestrictedException {
         UserEntity userEntity1 = userDao.getUserByUserName(userEntity.getUserName());

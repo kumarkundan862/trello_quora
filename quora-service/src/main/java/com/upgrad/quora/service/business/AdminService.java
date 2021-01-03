@@ -15,9 +15,14 @@ import java.time.ZonedDateTime;
 @Service
 public class AdminService {
 
+    //Required services are autowired to enable access to methods defined in respective Admin services
     @Autowired
     private UserDao userDao;
 
+    /*
+        This service is used to delete a user from the Quora Application. Only an admin
+        is authorized to access this endpoint.
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public UserEntity deleteUser(final String userUuid, final String authorizationToken) throws AuthorizationFailedException, UserNotFoundException {
         UserAuthEntity userAuthEntity = userDao.getUserByAccessToken(authorizationToken);
