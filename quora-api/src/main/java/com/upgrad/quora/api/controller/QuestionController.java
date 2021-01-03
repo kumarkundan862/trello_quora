@@ -85,7 +85,8 @@ public class QuestionController {
 
 
     //This method will validate the user and give list of all the question sorted by userId.
-    @RequestMapping(method = RequestMethod.POST,path="/questions/all/{userId}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET,path="/question/all/{userId}",produces =
+            MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsByUser(
             @PathVariable("userId") final String userId,
             @RequestHeader("authorization") final String authorization)
