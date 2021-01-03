@@ -94,10 +94,8 @@ public class QuestionService {
     @Transactional(propagation = Propagation.REQUIRED)
     public List<QuestionEntity> getAllQuestionsByUser(String userUuid, final String authorizationToken) throws AuthorizationFailedException,
             UserNotFoundException {
-
+        System.out.println("hi");
         UserAuthEntity userAuthEntity = userDao.getUserByAccessToken(authorizationToken);
-
-
         if (userAuthEntity != null) {
 
             final ZonedDateTime now = ZonedDateTime.now();
@@ -110,11 +108,32 @@ public class QuestionService {
                 if (userEntity != null) {
                     return questionDao.getAllQuestionsByUser(userUuid);
                 }
-                throw new UserNotFoundException("USR-001", "User with entered uuid does not exist");
+                throw new UserNotFoundException("USR-001", "User with entered uuid to be deleted does not exist");
             }
             throw new AuthorizationFailedException("ATHR-002", "User is signed out");
         }
         throw new AuthorizationFailedException("USR-001", "User has not signed in");
+
+
+
+        /*
+
+            final ZonedDateTime now = ZonedDateTime.now();
+            final ZonedDateTime loggedOutTime = userAuthEntity.getLogoutAt();
+            final long difference = now.compareTo(loggedOutTime);
+
+            if (difference < 0) {
+                UserEntity userEntity = userDao.getUserByUuid(userUuid);
+                if (userEntity != null) {
+                    return questionDao.getAllQuestionsByUser(userUuid);
+                }
+                throw new UserNotFoundException("USR-001", "User with entered uuid does not exist");
+            }
+            throw new AuthorizationFailedException("ATHR-003", "User is signed out.Sign in first to edit the question");
+        }
+        throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+
+         */
 
     }
 
