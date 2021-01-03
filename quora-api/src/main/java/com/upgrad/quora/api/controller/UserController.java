@@ -30,6 +30,11 @@ public class UserController {
     @Autowired
     private UserBusinessService userBusinessService;
 
+    /*
+        This endpoint is used to register a new user in the Quora Application.
+        On successful registration, the information is stored in the database and JSON response
+        is created with appropriate message and HTTP status.
+     */
     @RequestMapping(method = RequestMethod.POST, path = "/user/signup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SignupUserResponse> signup(final SignupUserRequest signupUserRequest) throws SignUpRestrictedException {
         final UserEntity userEntity = new UserEntity();
@@ -54,6 +59,11 @@ public class UserController {
         return new ResponseEntity<SignupUserResponse>(userResponse, HttpStatus.CREATED);
     }
 
+
+    /*
+        This endpoint is used for user authentication. The user authenticates in the application
+        and after successful authentication, access token is given to a user.
+     */
     @RequestMapping(method = RequestMethod.POST, path = "/user/signin",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SigninResponse> signin(@RequestHeader("authorization") final String authorization) throws AuthenticationFailedException, UserNotFoundException {
         byte[] decode = Base64.getDecoder().decode(authorization.split("Basic ")[1]);
@@ -67,6 +77,11 @@ public class UserController {
         return new ResponseEntity<SigninResponse>(response,headers,HttpStatus.OK);
     }
 
+
+    /*
+        This endpoint is used to sign out from the Quora Application. The user cannot access
+        any other endpoint once he is signed out of the application.
+     */
     @RequestMapping(method = RequestMethod.POST, path = "/user/signout",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SignoutResponse> signout(@RequestHeader("authorization") final String authorization) throws SignOutRestrictedException {
 
