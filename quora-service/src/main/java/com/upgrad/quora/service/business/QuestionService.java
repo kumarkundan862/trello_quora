@@ -121,6 +121,42 @@ public class QuestionService {
 
         if (userAuthEntity != null) {
 
+            QuestionEntity existingQuestion = questionDao.getQuestionByUuid(questionUuid);
+            if (existingQuestion != null) {
+
+                final ZonedDateTime now = ZonedDateTime.now();
+                final ZonedDateTime loggedOutTime = userAuthEntity.getLogoutAt();
+
+                if (now != null && loggedOutTime != null) {
+                    final long difference = now.compareTo(loggedOutTime);
+
+                    if (difference < 0) {
+                        long userId = userAuthEntity.getUser().getId();
+                        if (userId == existingQuestion.getUser().getId()) {
+
+                            //Question existingQuestion = questionDao.getQuestionByUuid(questionUuid);
+                            //question.setContent(existingQuestion.getContent());
+                            question.setUuid(existingQuestion.getUuid());
+                            question.setId(existingQuestion.getId());
+                            question.setDate(existingQuestion.getDate());
+                            question.setUser(existingQuestion.getUser());
+
+                            return questionDao.editQuestion(question);
+                            //question;
+                        }
+                        throw new AuthorizationFailedException("ATHR-003", "Only the question owner can edit the question");
+                    }
+
+                 }throw new AuthorizationFailedException("ATHR-003", "User is signed out.Sign in first to edit the question");
+
+            }throw new InvalidQuestionException("QUES-001", "Entered question uuid does not exist");
+
+        } throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+
+        /*
+
+        if (userAuthEntity != null) {
+
             final ZonedDateTime now = ZonedDateTime.now();
             final ZonedDateTime loggedOutTime = userAuthEntity.getLogoutAt();
 
