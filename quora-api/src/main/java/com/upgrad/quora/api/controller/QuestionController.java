@@ -30,8 +30,13 @@ public class QuestionController {
     @Autowired
     private UserBusinessService userBusinessService;
 
+    /*
+        This endpoint is used to create a question in the Quora Application.
+        Any logged-in user can access this endpoint
+     */
     @RequestMapping(path = "/question/create", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<QuestionResponse> createQuestion(@RequestHeader("authorization") final String auth, QuestionRequest questionRequest) throws AuthorizationFailedException{
+    public ResponseEntity<QuestionResponse> createQuestion(@RequestHeader("authorization") final String auth,
+                                                           QuestionRequest questionRequest) throws AuthorizationFailedException{
         UserAuthEntity userAuthEntity = userBusinessService.getUserByAuthToken(auth,false);
         if(userAuthEntity == null) {
             throw new AuthorizationFailedException("ATHR-001","User has not signed in");
@@ -49,6 +54,11 @@ public class QuestionController {
         return new ResponseEntity<QuestionResponse>(new QuestionResponse().id(createdQuestion.getUuid()).status("QUESTION CREATED"), HttpStatus.OK);
     }
 
+
+    /*
+        This endpoint is used to fetch all the questions that have been posted in the application
+        by any user. Any logged-in user can access this endpoint.
+     */
     @RequestMapping(path = "/question/all", method = RequestMethod.GET, produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(
@@ -67,11 +77,15 @@ public class QuestionController {
             allQuestionResponses.add(questionDetailsResponse);
 
         }
-
         return new ResponseEntity<List<QuestionDetailsResponse>>( allQuestionResponses,
                 HttpStatus.OK);
     }
 
+
+    /*
+        This endpoint is used to delete a question that has been posted by a user. Only the owner
+         or admin of the question can delete the question.
+     */
     @RequestMapping(method = RequestMethod.DELETE, path = "/question/delete/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionDeleteResponse> deleteQuestion(
             @PathVariable("questionId") final String questionId,
@@ -85,7 +99,10 @@ public class QuestionController {
     }
 
 
-    //This method will validate the user and give list of all the question sorted by userId.
+    /*
+        This endpoint is used to fetch all the questions posed by a specific user.
+        Any user can access this endpoint.
+     */
     @RequestMapping(method = RequestMethod.GET,path="/question/all/{userId}",produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsByUser(
@@ -93,10 +110,8 @@ public class QuestionController {
             @RequestHeader("authorization") final String authorization)
             throws AuthorizationFailedException, UserNotFoundException {
 
-        // Get all questions
         List<QuestionEntity> allQuestions = questionService.getAllQuestionsByUser(userId,authorization);
 
-        // Create response
         List<QuestionDetailsResponse> allQuestionDetailsResponses = new ArrayList<QuestionDetailsResponse>();
 
         for (int i = 0; i < allQuestions.size(); i++) {
@@ -106,10 +121,14 @@ public class QuestionController {
             allQuestionDetailsResponses.add(questionDetailsResponse);
 
         }
-        // Return response
         return  new ResponseEntity<List<QuestionDetailsResponse>>(allQuestionDetailsResponses, HttpStatus.OK);
     }
 
+
+    /*
+        This endpoint is used to edit a question that has been posted by a user. Only the owner
+        of the question can edit the question.
+     */
     @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

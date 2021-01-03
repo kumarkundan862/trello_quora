@@ -20,6 +20,12 @@ public class CommonController {
     @Autowired
     private UserCommonService userCommonssService;
 
+
+    /*
+        This endpoint is used to get the details of any user in the Quora Application. This
+        endpoint can be accessed by any user in the application. It takes userId of the user
+        whose information is to be retrieved.
+     */
     @RequestMapping(method = RequestMethod.GET, path = "/userprofile/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity <UserDetailsResponse> userProfile(@PathVariable("userId") final String userUuid, @RequestHeader("authorization") final String accessToken) throws AuthorizationFailedException, UserNotFoundException, AuthenticationFailedException {
 
