@@ -89,7 +89,7 @@ public class QuestionController {
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsByUser(
             @PathVariable("userId") final String userId,
             @RequestHeader("authorization") final String authorization)
-            throws AuthorizationFailedException, UserNotFoundException, UserNotFoundException {
+            throws AuthorizationFailedException, UserNotFoundException {
 
         // Get all questions
         List<QuestionEntity> allQuestions = questionService.getAllQuestionsByUser(userId,authorization);
